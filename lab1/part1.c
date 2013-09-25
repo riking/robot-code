@@ -4,7 +4,12 @@
 //
 // This program foos the bar.
 
-int main(void) {
+#define __AVR_ATmega328P__ 1
+#include <avr/io.h>
+#include "Arduino.h"
 
+
+int main(void) {
+    pinMode(13, 1);
 }
 
