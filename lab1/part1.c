@@ -2,29 +2,32 @@
 // Lab 1 - Part 1
 // Kane York and Nicolas Avila
 //
-// This program sets the pin5 of PORTB on and off each .4 seconds for three times.
+// This program sets the pin5 of PORTB on and off each .4 seconds three times.
 
 #define __AVR_ATmega328P__ 1
 #include <avr/io.h>
+#include <util/delay.h>
 
-int MASK_PIN_5 = 0x10;
+#define mask5 (1 << PB5)
 
 int main(void) {
-    int mp5 = MASK_PIN_5;
-    // TODO how to delay() without Arduino.h
-    delay(1000);
-    PORTB |= MASK_PIN_5;
-    delay(400);
-    PORTB &= ~MASK_PIN_5;
-    delay(400);
-    PORTB |= MASK_PIN_5;
-    delay(400);
-    PORTB &= ~MASK_PIN_5;
-    delay(400);
-    PORTB |= MASK_PIN_5;
-    delay(400);
-    PORTB &= ~MASK_PIN_5;
-    delay(400);
-    return 0;
+	// set up pin for output
+	DDRB |= mask5;
+
+	_delay_ms(1000);
+	// copypaste because i'm lazy
+	PORTB |= mask5;
+	_delay_ms(400);
+	PORTB &= ~mask5;
+	_delay_ms(400);
+	PORTB |= mask5;
+	_delay_ms(400);
+	PORTB &= ~mask5;
+	_delay_ms(400);
+	PORTB |= mask5;
+	_delay_ms(400);
+	PORTB &= ~mask5;
+	_delay_ms(400);
+	return 0;
 }
 
