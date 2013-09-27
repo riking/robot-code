@@ -4,7 +4,6 @@
 //
 // This program sets the pin5 of PORTB on and off each .4 seconds three times.
 
-#define __AVR_ATmega328P__ 1
 #include <avr/io.h>
 #include <util/delay.h>
 
