@@ -21,7 +21,7 @@
 #define ONPIN(reg,pin) reg |= MASK(pin)
 #define OFFPIN(reg,pin) reg &= ~MASK(pin)
 
-void showNumber(int number);
+void showNumber(int number); // c, y u do dis 2 me :(
 
 int main(void) {
 	// setup data direction
@@ -34,6 +34,7 @@ int main(void) {
 	}
 }
 
+// abuse of C's if statements where anything non-zero is true
 void showNumber(int number) {
 	if (number & 4) ONPIN(xPORT, x4pin); else OFFPIN(xPORT, x4pin);
 	if (number & 2) ONPIN(xPORT, x2pin); else OFFPIN(xPORT, x2pin);

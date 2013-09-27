@@ -13,6 +13,7 @@ int main(void) {
 	// set up pin for output
 	DDRB |= mask5;
 
+	// wait for a bit (note: this causes a brief flash of the led, because setting it for output turned it off)
 	_delay_ms(1000);
 	// copypaste because i'm lazy
 	PORTB |= mask5;

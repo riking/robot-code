@@ -16,13 +16,14 @@
 #define x2pin PB5
 #define x4pin PB6
 
+// because these are macros, they get substituted into the code. yey!
 #define MASK(pin) (1 << pin)
 #define ONMASK(reg,mask) reg |= mask
 #define OFFMASK(reg,mask) reg &= ~mask
 #define ONPIN(reg,pin) reg |= MASK(pin)
 #define OFFPIN(reg,pin) reg &= ~MASK(pin)
 
-void showNumber(int number);
+void showNumber(int number); // c, y u do dis 2 me :(
 
 int main(void) {
 	// setup data direction
@@ -32,6 +33,7 @@ int main(void) {
 	int dir = 1;
 	while (1) {
 		showNumber(i);
+		// reverse direction @ endpoints (TODO this seems like something that could have an external validity test)
 		if (i == 7) dir = -1;
 		if (i == 0) dir = 1;
 		i += dir;
