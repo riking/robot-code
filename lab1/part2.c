@@ -9,11 +9,11 @@
 #include <util/delay.h>
 
 // TODO change these to the correct ones upon recieveing the LEDs
-#define xDDR DDRB
-#define xPORT PORTB
-#define x1pin PB4
-#define x2pin PB5
-#define x4pin PB6
+#define xDDR DDRD
+#define xPORT PORTD
+#define x1pin PD3
+#define x2pin PD5
+#define x4pin PD7
 
 #define MASK(pin) (1 << pin)
 #define ONMASK(reg,mask) reg |= mask
