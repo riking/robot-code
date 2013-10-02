@@ -22,10 +22,9 @@ unsigned int find_prime();
 int main(void) {
 	// setup pins
 	ONMASK(DDRD, MASK(PD3) | MASK(PD5) | MASK(PD7));
-	// TODO
-	PORTD = 0xFF;
 
-	//display_prime(2);
+	// Hardcode these, because it's easier to hardcode them than special-case them in find_prime()
+	display_prime(2);
 	display_prime(3);
 	while(1)
 		display_prime(find_prime());
@@ -68,8 +67,24 @@ unsigned int find_prime() {
 }
 
 void display_prime(unsigned int prime) {
-	if (prime & 8) ONPIN(PORTD, PD7); else OFFPIN(PORTD, PD7);
-	if (prime & 4) ONPIN(PORTD, PD5); else OFFPIN(PORTD, PD5);
-	if (prime & 2) ONPIN(PORTD, PD3); else OFFPIN(PORTD, PD3);
+	// Display the numbers by moving the bits down and displaying the current bottom 3.
+	while (prime) {
+		if (prime & 4) ONPIN(PORTD, PD7); else OFFPIN(PORTD, PD7);
+		if (prime & 2) ONPIN(PORTD, PD5); else OFFPIN(PORTD, PD5);
+		if (prime & 1) ONPIN(PORTD, PD3); else OFFPIN(PORTD, PD3);
+		_delay_ms(250);
+		prime >>= 1;
+	}
+	OFFPIN(PORTD, PD7);
+	OFFPIN(PORTD, PD5);
+	OFFPIN(PORTD, PD3);
+	_delay_ms(400);
+	ONPIN(PORTD, PD7);
+	ONPIN(PORTD, PD5);
+	ONPIN(PORTD, PD3);
+	_delay_ms(100);
+	OFFPIN(PORTD, PD7);
+	OFFPIN(PORTD, PD5);
+	OFFPIN(PORTD, PD3);
 	_delay_ms(400);
 }
