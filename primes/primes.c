@@ -16,8 +16,8 @@
 #define ONPIN(reg,pin) reg |= MASK(pin)
 #define OFFPIN(reg,pin) reg &= ~MASK(pin)
 
-void display_prime(int number);
-int find_prime();
+void display_prime(unsigned int number);
+unsigned int find_prime();
 
 int main(void) {
 	// setup pins
@@ -46,11 +46,11 @@ Expected output:
 29 101
 */
 
-int last_prime = 3;
+unsigned int last_prime = 3;
 
-int find_prime() {
-	int cur = last_prime;
-	int try;
+unsigned int find_prime() {
+	unsigned int cur = last_prime;
+	unsigned int try;
 
 	while (1) {
 		cur += 2;
@@ -67,7 +67,7 @@ int find_prime() {
 	return cur;
 }
 
-void display_prime(int prime) {
+void display_prime(unsigned int prime) {
 	if (prime & 8) ONPIN(PORTD, PD7); else OFFPIN(PORTD, PD7);
 	if (prime & 4) ONPIN(PORTD, PD5); else OFFPIN(PORTD, PD5);
 	if (prime & 2) ONPIN(PORTD, PD3); else OFFPIN(PORTD, PD3);
