@@ -31,18 +31,18 @@ int main(void) {
 }
 
 /*
-Expected output:
+Expected output
 
  2 010
  3 011
  5 101
  7 111
-11 011
-13 101
-17 001
-19 011
-23 111
-29 101
+11 1011
+13 1101
+17 10001
+19 10011
+23 10111
+29 11100
 */
 
 unsigned int last_prime = 3;
