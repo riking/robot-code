@@ -1,8 +1,9 @@
 // CPE123 - Fall 2013
-// Not a Lab
+// Not a Lab - October 1
 // Kane York
 //
-// This program displays the prime numbers.
+// This program calculates and displays the prime numbers.
+// The display is done by cycling through the bits and displaying the low 3 on some LEDs.
 
 
 #include <avr/io.h>
