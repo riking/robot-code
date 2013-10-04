@@ -15,32 +15,38 @@
 #define LED2 PD5
 #define LED3 PD7
 
-#define PERIOD_us 1000
-
-void doCycle(int pin, float duty) {
-	int onTime = (int) (PERIOD_us * duty);
-	int offTime = PERIOD_us - onTime;
+void doCycle(int pin, signed char duty) {
+	char offTime = 100 - duty;
 	ONPIN(PORTD, pin);
-	_delay_us(onTime);
+	while (duty) {
+		_delay_us(10);
+		duty -= 1;
+	}
 	OFFPIN(PORTD, pin);
-	_delay_us(offTime);
+	while (offTime) {
+		_delay_us(10);
+		offTime -= 1;
+	}
 }
 
+#define TWELVE(x) do {\
+	x; x; x; x; x; x; x; x; x; x; x; x;\
+} while(0)
+
 void fadeInOut(int pin) {
-	float duty;
-	for (duty = 0; duty < 1; duty += 0.2) {
-		doCycle(pin, duty);
-		doCycle(pin, duty);
-		doCycle(pin, duty);
+	signed char duty;
+	for (duty = 0; duty < 100; duty += 2) {
+		TWELVE(doCycle(pin, duty));
 	}
-	for (duty = 1; duty > 0; duty += 0.2) {
-		doCycle(pin, duty);
-		doCycle(pin, duty);
-		doCycle(pin, duty);
+	for (duty = 100; duty > 0; duty -= 2) {
+		TWELVE(doCycle(pin, duty));
 	}
 }
 
 int main(void) {
+	ONPIN(DDRD, LED1);
+	ONPIN(DDRD, LED2);
+	ONPIN(DDRD, LED3);
 	fadeInOut(LED1);
 	fadeInOut(LED2);
 	fadeInOut(LED3);
