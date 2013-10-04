@@ -1,7 +1,15 @@
 F_CPU = 16000000
 
+part1:
+        avr-gcc -mmcu=atmega328p -DF_CPU=$(F_CPU) -O2 -o test.elf lab2_part1.c
+        avr-objcopy -O ihex test.elf test.hex
+        avr-size test.elf
 part2:
         avr-gcc -mmcu=atmega328p -DF_CPU=$(F_CPU) -O2 -o test.elf lab2_part2.c
+        avr-objcopy -O ihex test.elf test.hex
+        avr-size test.elf
+part3:
+        avr-gcc -mmcu=atmega328p -DF_CPU=$(F_CPU) -O2 -o test.elf lab2_part3.c
         avr-objcopy -O ihex test.elf test.hex
         avr-size test.elf
 
