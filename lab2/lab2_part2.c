@@ -1,5 +1,5 @@
 // CPE123 - Fall 2013
-// Lab 2 - Part 1
+// Lab 2 - Part 2
 // Kane York and Alexander Bohlen
 //
 // This program fades in and out three LEDs.
@@ -20,12 +20,12 @@ void doCycle(int pin, signed char duty) {
 	ONPIN(PORTD, pin);
 	while (duty) {
 		_delay_us(10);
-		duty -= 1;
+		duty--;
 	}
 	OFFPIN(PORTD, pin);
 	while (offTime) {
 		_delay_us(10);
-		offTime -= 1;
+		offTime--;
 	}
 }
 

@@ -1,5 +1,10 @@
 F_CPU = 16000000
 
+part2:
+        avr-gcc -mmcu=atmega328p -DF_CPU=$(F_CPU) -O2 -o test.elf lab2_part2.c
+        avr-objcopy -O ihex test.elf test.hex
+        avr-size test.elf
+
 default:
 	avr-gcc -mmcu=atmega328p -DF_CPU=$(F_CPU) -O2 -o test.elf fading.c
 	avr-objcopy -O ihex test.elf test.hex
@@ -13,7 +18,7 @@ download_mac:
 	avrdude -p m328p -P /dev/tty.usbmodem1411 -c arduino -F -u -U flash:w:test.hex
 
 download_linux:
-	#may need to change /dev/tty to correct port on your computer
+	# may need to change /dev/tty to correct port on your computer
 	avrdude -p m328p -P /dev/ttyACM0 -c arduino -F -u -U flash:w:test.hex
 
 download_windows:
