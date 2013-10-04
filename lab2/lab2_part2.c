@@ -47,8 +47,10 @@ int main(void) {
 	ONPIN(DDRD, LED1);
 	ONPIN(DDRD, LED2);
 	ONPIN(DDRD, LED3);
-	fadeInOut(LED1);
-	fadeInOut(LED2);
-	fadeInOut(LED3);
+	while (1) {
+		fadeInOut(LED1);
+		fadeInOut(LED2);
+		fadeInOut(LED3);
+	}
 }
 
