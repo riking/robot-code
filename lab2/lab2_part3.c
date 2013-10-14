@@ -107,21 +107,37 @@ int main(void) {
 	ONMASK(DDRD, MASK(MOTOR1) | MASK(MOTOR2) | MASK(MOTOR3) );
 
 	signed char speed;
+	signed char delta = 1;
 
 	// accelerate
-	for (speed = 0; speed < 50; speed += 1) {
+	for (speed = 0; speed < 50; speed += delta) {
 		move(speed);
 		_delay_ms(200);
+		if (speed > 10) delta++;
+		if (speed > 30) delta++;
 	}
 	// stop, accelerate in reverse
-	for (speed = 50; speed > -100; speed -= 5) {
+	for (speed = 50; speed > 0; speed -= delta) {
 		move(speed);
 		_delay_ms(200);
+		if (speed > 10) delta--;
+		if (speed > 30) delta--;
+		if (delta < 1) delta = 1;
 	}
-	// stop
-	for (speed = -100; speed < 0; speed += 10) {
+	delta = 1;
+	for (speed = 0; speed > -50; speed -= delta) {
 		move(speed);
 		_delay_ms(200);
+		if (speed < -10) delta++;
+		if (speed < -30) delta++;
+	}
+	// stop slowly
+	for (speed = -50; speed < 0; speed += delta) {
+		move(speed);
+		_delay_ms(200);
+		if (speed < -10) delta--;
+		if (speed < -30) delta--;
+		if (delta < 1) delta = 1;
 	}
 }
 
