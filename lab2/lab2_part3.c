@@ -44,7 +44,7 @@ ISR(TIMER1_COMPA_vect) {
 	signed char i = _motor_number & 3;
 	if (_motor_number & 4) {
 		// Turning off
-		OCR1A = 6000 + _motor_wait;
+		OCR1A = /*6000*/ + _motor_wait;
 
 		// Next action: Turn on, so increment i, signal off.
 		_motor_number = (i + 1) & 3; //% 4;
@@ -57,6 +57,9 @@ ISR(TIMER1_COMPA_vect) {
 			break;
 		case 2:
 			OFFPIN(PORTD, MOTOR3);
+			break;
+		case 3:
+			OCR1A = 6000 + 6000 + 6000 + 6000;
 			break;
 		}
 	} else {

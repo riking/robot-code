@@ -10,3 +10,4 @@
 #define ONPIN(reg,pin) reg |= MASK(pin)
 #define OFFPIN(reg,pin) reg &= ~MASK(pin)
 #define GETPIN(reg,pin) (reg & MASK(pin))
+

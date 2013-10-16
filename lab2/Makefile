@@ -12,6 +12,10 @@ part3:
 	avr-gcc -mmcu=atmega328p -DF_CPU=$(F_CPU) -O2 -o test.elf lab2_part3.c
 	avr-objcopy -O ihex test.elf test.hex
 	avr-size test.elf
+test:
+	avr-gcc -mmcu=atmega328p -DF_CPU=$(F_CPU) -O2 -o test.elf lab2_part3\ testing.c
+	avr-objcopy -O ihex test.elf test.hex
+	avr-size test.elf
 
 default:
 	avr-gcc -mmcu=atmega328p -DF_CPU=$(F_CPU) -O2 -o test.elf fading.c
