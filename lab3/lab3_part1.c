@@ -1,8 +1,8 @@
 // CPE123 - Fall 2013
-// Lab 2 - Part 1
-// Kane York and Alexander Bohlen
+// Lab 3 - Part 1
+// Kane York and Froylan Aguirre
 //
-// This program blinks LED1 five times each time the switch is pressed.
+// This program turns on LED1 if the light sensor is dark.
 
 
 #define __AVR_ATmega328P__ 1
