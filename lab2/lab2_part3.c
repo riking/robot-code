@@ -22,7 +22,7 @@
 // ==== MOTOR OPERATIONS ==== //
 // ========================== //
 
-void initialize_timer(void) {
+void initialize_motor_timer(void) {
 	// Timer/Counter Control Register
 	// ClockSelect = Prescaler 8 (16MHz -> 2 MHz)
 	TCCR1B = 2;                  //increment timer at 2MHz
@@ -105,7 +105,7 @@ void move(signed char speed) {
 }
 
 int main(void) {
-	initialize_timer();
+	initialize_motor_timer();
 
 	ONMASK(DDRD, MASK(MOTOR1) | MASK(MOTOR2) | MASK(MOTOR3) );
 
