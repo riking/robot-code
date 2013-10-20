@@ -1,3 +1,6 @@
+#ifndef _motors_H
+#define _motors_H 1
+
 // ========================== //
 // ==== MOTOR OPERATIONS ==== //
 // ========================== //
@@ -82,3 +85,4 @@ void set_motor_speed(char motor_number, signed char speed) {
 	_motor_speeds[motor_number] = speed;
 }
 
+#endif

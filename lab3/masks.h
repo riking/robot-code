@@ -1,3 +1,5 @@
+#ifndef _masks_H
+#define _masks_H 1
 // CPE123 - Fall 2013
 // Utility Files
 // Kane York
@@ -11,3 +13,4 @@
 #define OFFPIN(reg,pin) reg &= ~MASK(pin)
 #define GETPIN(reg,pin) (reg & MASK(pin))
 
+#endif
