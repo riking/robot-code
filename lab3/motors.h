@@ -9,10 +9,14 @@
 
 // Call this at the beginning of the program to start the motors running.
 void initialize_motor_timer(void);
-// This method is the API - 
+
+// This method is the main API method.
 void set_motor_speed(char motor_number, signed char speed);
 
 // Code
+
+#include "masks.h"
+
 void initialize_motor_timer(void) {
 	// Timer/Counter Control Register
 	// ClockSelect = Prescaler 8 (16MHz -> 2 MHz)
@@ -26,10 +30,9 @@ void initialize_motor_timer(void) {
 // if that gives 3, skip the cycle
 // _motor_number & 4 is 0 if turning on, 1 if turning off
 // 4th element in _motor_speeds is ignored
-signed char _motor_speeds[] = {0, 0, 0, 0};
-volatile signed char _motor_number = 0;
-volatile int _motor_wait;
-// stagger the motors!
+static signed char _motor_speeds[] = {0, 0, 0, 0};
+static volatile signed char _motor_number = 0;
+static volatile int _motor_wait;
 
 ISR(TIMER1_COMPA_vect) {
 	signed char i = _motor_number & 3;
