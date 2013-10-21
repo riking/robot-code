@@ -14,6 +14,7 @@
 #define MOTOR1 PD5
 #define MOTOR2 PD6
 #define MOTOR3 PD7
+#define SWITCH1 PD3
 #define LIGHT1 0
 #define LIGHT2 1
 
@@ -37,11 +38,31 @@ unsigned char readADC(unsigned char num) {
   return temp;
 }
 
+// reminder: motor1 +forward; motor2 -forward
 int main(void) {
 	initialize_motor_timer();
 	initialize_adc();
+	OFFPIN(DDRD, SWITCH1);
+
+	// Wait for switch to be pressed
+	while(GETPIN(PIND, SWITCH1)) ;
 
 	while(1) {
-		unsigned char light_left = readADC(SENSOR0)
+		unsigned char light_left = readADC(LIGHT0);
+		unsigned char light_right = readADC(LIGHT1);
+		signed int light_diff = light_left - light_right;
+// scale motors from 10 to 60
+// scale light_diff from -200 to +200
+		//60 - (light_diff / 4)
+		if (light_diff < -10) {
+			set_motor_speed(1, 60);
+			set_motor_speed(2, 60 - (light_diff / 4));
+		} else if (light_diff > 10) {
+			set_motor_speed(1, 60 - (light_diff / 4));
+			set_motor_speed(2, 60);
+		} else {
+			set_motor_speed(1, 60);
+			set_motor_speed(2, 60);
+		}
 	}
 }
