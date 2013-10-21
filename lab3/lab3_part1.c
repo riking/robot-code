@@ -13,7 +13,7 @@
 
 #define LIGHT1 0
 #define LIGHT2 1
-#define LED1 PD0
+#define LED1 PB5
 
 
 //call this first to enable the analog-to-digital converter
@@ -36,13 +36,13 @@ unsigned char readADC(unsigned char num) {
 
 int main(void) {
 	initialize_adc();
-	ONPIN(DDRD, LED1);
+	ONPIN(DDRB, LED1);
 	while (1) {
-		unsigned char light = readADC(SENSOR1);
+		unsigned char light = readADC(LIGHT1);
 		if (light < 128) {
-			ONPIN(PORTD, LED1);
+			ONPIN(PORTB, LED1);
 		} else {
-			OFFPIN(PORTD, LED1);
+			OFFPIN(PORTB, LED1);
 		}
 	}
 }
