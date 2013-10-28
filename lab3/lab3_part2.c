@@ -1,12 +1,13 @@
 // CPE123 - Fall 2013
 // Lab 2 - Part 2
-// Kane York and Alexander Bohlen
+// Kane York and Froylan Aguirre
 //
 // Line-following program
 
 #define __AVR_ATmega328P__ 1
 #include <avr/io.h>
 #include <util/delay.h>
+#include <avr/interrupt.h>
 
 #include "masks.h"
 
@@ -14,8 +15,8 @@
 #define MOTOR2 PD6
 #define MOTOR3 PD7
 #define SWITCH1 PD3
+#define LIGHT0 2
 #define LIGHT1 0
-#define LIGHT2 1
 
 #include "motors.h"
 
@@ -36,6 +37,24 @@ unsigned char readADC(unsigned char num) {
 	temp = ADCH;                  //read upper 8bits
 	return temp;
 }
+
+
+/*
+motor1 RIGHT
+motor2 LEFT
+
+light0 LEFT
+light1 RIGHT
+
+
+*/
+
+int factorial(int n) {
+	if (n == 0) return 1;
+	if (n == 1) return 1;
+	return n * factorial(n - 1);
+}
+
 
 // reminder: motor1 +forward; motor2 -forward
 int main(void) {

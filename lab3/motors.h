@@ -11,9 +11,13 @@
 void initialize_motor_timer(void);
 
 // This method is the main API method.
-void set_motor_speed(char motor_number, signed char speed);
+void set_motor_speed(char motor_number, signed int speed);
 
-// Code
+
+// ========================== //
+// ====    DEFINITIONS   ==== //
+// ========================== //
+
 
 #include "masks.h"
 
@@ -64,26 +68,30 @@ ISR(TIMER1_COMPA_vect) {
 
 		// Next action: Turn off, so flip the signal bit
 		_motor_number |= 4;
-		switch (i) {
-		case 0:
-			ONPIN(PORTD, MOTOR1);
-			break;
-		case 1:
-			ONPIN(PORTD, MOTOR2);
-			break;
-		case 2:
-			ONPIN(PORTD, MOTOR3);
-			break;
+		if (_motor_speeds[i]) {
+			switch (i) {
+			case 0:
+				ONPIN(PORTD, MOTOR1);
+				break;
+			case 1:
+				ONPIN(PORTD, MOTOR2);
+				break;
+			case 2:
+				ONPIN(PORTD, MOTOR3);
+				break;
+			}
 		}
 	}
 	TCNT1 = 0;
 }
 
-void set_motor_speed(char motor_number, signed char speed) {
+void set_motor_speed(char motor_number, signed int speed) {
 	motor_number--; // pretend we're 1-indexed to the caller
 	if ((motor_number < 0) || (motor_number > 2)) return;
-	if (speed < -100) speed = -100;
-	else if (speed > 100) speed = 100;
+	signed char real_speed;
+	if (speed < -100) real_speed = -100;
+	else if (speed > 100) real_speed = 100;
+	else real_speed = speed;
 
 	_motor_speeds[motor_number] = speed;
 }
