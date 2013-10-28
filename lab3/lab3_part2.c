@@ -67,20 +67,22 @@ int main(void) {
 
 	while(1) {
 		unsigned char light_left = readADC(LIGHT0);
+		_delay_us(100);
 		unsigned char light_right = readADC(LIGHT1);
 		signed int light_diff = light_left - light_right;
-// scale motors from 10 to 60
-// scale light_diff from -200 to +200
-		//60 - (light_diff / 4)
-		if (light_diff < -10) {
-			set_motor_speed(1, 60);
-			set_motor_speed(2, 60 - (light_diff / 4));
-		} else if (light_diff > 10) {
-			set_motor_speed(1, 60 - (light_diff / 4));
-			set_motor_speed(2, 60);
+		//light_diff *= 20;
+		//if (light_diff > 80) light_diff = 80;
+		//if (light_diff < -80) light_diff = -80;
+
+		if (light_left > 200) {
+			set_motor_speed(1, 00);
+			set_motor_speed(2, 10);
+		} else if (light_left > 190) {
+			set_motor_speed(1, -10);
+			set_motor_speed(2, 10);
 		} else {
-			set_motor_speed(1, 60);
-			set_motor_speed(2, 60);
+			set_motor_speed(1, -10);
+			set_motor_speed(2, 00);
 		}
 	}
 }
