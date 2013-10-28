@@ -74,6 +74,7 @@ int main(void) {
 		//if (light_diff > 80) light_diff = 80;
 		//if (light_diff < -80) light_diff = -80;
 
+		// BAD VERSION: Ignore right light sensor, follow line edge with left sensor
 		if (light_left > 200) {
 			set_motor_speed(1, 00);
 			set_motor_speed(2, 10);
