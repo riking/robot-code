@@ -16,7 +16,7 @@
 
 //initialize timer 0 for lab 4
 void initialize_ir_timer(void) {
-  TCCR0B |= (1 << CS02);   //set timer 0 to increment at 62.5KHz
+TCCR0B |= (1 << CS02);   //set timer 0 to increment at 62.5KHz
 }
 
 char read_IR();
@@ -27,19 +27,27 @@ char read_IR();
 // If no signal is recieved, -1 will be returned.
 
 char high_bit(char port);
-void waitFor1(char port, char timeout);
-void waitFor0(char port, char timeout);
+char findFallingEdge(char port, char timeout);
 
 char read_IR() {
 	OFFPIN(PORTB, BOARDLED);
-	if (GETPIN(PIND, IRSENSOR)) return -1;
-	// we have a 0 - start reading
+
+	if (!findFallingEdge(IRSENSOR, 75+3)) {
+		return -1; // no start bit
+	}
+	if (findFallingEdge(IRSENSOR, 156+3)) {
+		return -1; // bad start bit
+	}
+
+	// we have a start bit - turn on led
 	ONPIN(PORTB, BOARDLED);
 
-	char ret = 0;	
-	char i;
+	char ret = 0;
+	char i, tmp;
 	for (i = 0; i < 7; i++) {
-		if (high_bit(IRSENSOR)) {
+		tmp = high_bit(IRSENSOR);
+		if (tmp == -1) return -1;
+		if (tmp) {
 			ret |= (1 << i);
 		}
 	}
@@ -47,37 +55,40 @@ char read_IR() {
 	return ret;
 }
 
+// 2.5 ms @ 62.5 KHz = 156 +1
+// 1.2 ms @ 62.5 KHz = 75 +1
+// 0.9 ms @ 62.5 KHz = 56.3 +2
+
 // (boolean)
 // does a single cycle read on the ir sensor, should be looped 7 times
+// -1 if abort
 char high_bit(char port) {
-	waitFor1(port, 80);
-	waitFor0(port, 80);
-	// Timer-wait for 0.6 ms: math is 37.5
-	// Round up to 38 for safety
-	TCNT0 = 0;
-	while (TCNT0 < 39)
-		;
-
+	char tmp;
+	if (!findFallingEdge(port, 75+3)) {
+		return -1;
+	}
+	if (findFallingEdge(port, 57+3)) {
+		return -1;
+	}
 	return !GETPIN(PIND, port);
 }
 
-// stall until the port is high
-void waitFor1(char port, char timeout) {
+// return 1 if we get a falling edge within timeout
+// return 0 if no falling edge is found
+char findFallingEdge(char port, char timeout) {
 	TCNT0 = 0;
+	// wait until we have any high, then continue to next loop
 	while (TCNT0 < timeout) {
 		if (GETPIN(PIND, port))
-			return;
-		_delay_us(10);
+			break;
 	}
-}
-// stall until the port is low
-void waitFor0(char port, char timeout) {
-	TCNT0 = 0;
+
+	// wait until we have a low
 	while (TCNT0 < timeout) {
 		if (!GETPIN(PIND, port))
-			return;
-		_delay_us(10);
+			return 1;
 	}
+	return 0;
 }
 int main(void) {
 	ONPIN(DDRD, LED);
@@ -109,15 +120,32 @@ int main(void) {
 				blink_count = 0;
 				break;
 			}
-			
+			/*
+			ONPIN(PORTD, LED);
+			_delay_ms(100);
+			OFFPIN(PORTD, LED);
+			_delay_ms(100);
+			ONPIN(PORTD, LED);
+			_delay_ms(100);
+			OFFPIN(PORTD, LED);
+			_delay_ms(100);
 			while (ir) {
 				if (ir & 1) ONPIN(PORTD, LED);
 				else OFFPIN(PORTD, LED);
 				ir <<= 1;
 				_delay_ms(400);
 			}
+			ONPIN(PORTD, LED);
+			_delay_ms(100);
+			OFFPIN(PORTD, LED);
+			_delay_ms(100);
+			ONPIN(PORTD, LED);
+			_delay_ms(100);
+			OFFPIN(PORTD, LED);
+			_delay_ms(100);
+*/
 		} else {
-			blink_count = -1;
+			blink_count = 0;
 		}
 
 		for (cnt = 0; cnt < blink_count; cnt++) {
