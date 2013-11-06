@@ -115,9 +115,9 @@ int main(void) {
 
 		for (cnt = 0; cnt < blink_count; cnt++) {
 			ONPIN(PORTD, LED);
-			_delay_ms(200);
+			_delay_ms(500);
 			OFFPIN(PORTD, LED);
-			_delay_ms(200);
+			_delay_ms(500);
 		}
 		blink_count = 0;
 
