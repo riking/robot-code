@@ -63,15 +63,22 @@ char high_bit(char port) {
 
 // stall until the port is high
 void waitFor1(char port, char timeout) {
-	while (!GETPIN(PIND, port))
-		;
+	TCNT0 = 0;
+	while (TCNT0 < timeout) {
+		if (GETPIN(PIND, port))
+			return;
+		_delay_us(10);
+	}
 }
 // stall until the port is low
 void waitFor0(char port, char timeout) {
-	while (GETPIN(PIND, port))
-		;
+	TCNT0 = 0;
+	while (TCNT0 < timeout) {
+		if (!GETPIN(PIND, port))
+			return;
+		_delay_us(10);
+	}
 }
-
 int main(void) {
 	ONPIN(DDRD, LED);
 	ONPIN(DDRB, PB5);
