@@ -96,19 +96,6 @@ void send_command(unsigned char command) {
   }
 }
 
-int main(void) {
-  DDRD |= (1 << IR_LED);  //set the IR port pin to output
-
- 
-  while(1) {
-    send_start_bit();
-    send_command(18); //send code for Volume up 
-    _delay_ms(100);   //send no more than 1 command every 100ms
-  }
-
-  return 0;
-}
-
 void wait_for_press(void) {
 	while (1) {
 		if (GETPIN(PINB, SW1) == 0) break;
