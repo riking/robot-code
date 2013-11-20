@@ -15,8 +15,45 @@
 
 #define SW PB2
 #define LED PB3
+void lab4_initialize_timer0(void) {
+  TCCR0B |= (1 << CS02);   //set timer 0 to increment at 62.5KHz
+}
+
+char falling_edge(int timeout) {
+	char current_signal = PIND;
+	current_signal &= (1 << PD5);
+	char last_signal = current_signal;
+	TCNT0=0;
+	while(TCNT0 < timeout) {
+		current_signal = PIND;
+		current_signal &= (1 << PD5);
+		if(current_signal == 0 && last_signal == 32) {
+			return 1;
+		}
+		else {
+			last_signal = current_signal;
+		}
+	}
+	return 0; // no falling edge
+}
+
+int check_starting_bit(){
+	char falling_edgeA = falling_edge(150);
+		if(falling_edgeA == 0){
+			return 0;
+		}else{
+			char falling_edgeB = falling_edge(155);
+			if(falling_edgeB == 1){
+				return 0;
+			}else{
+				//PORTD &= ~(1 << PD7);
+				return 1;
+			}
+	}
+}//end of check_starting_bit
 
 int main() {
+	lab4_initialize_timer0();
 	ONPIN(DDRD, LED);
 	ONPIN(PORTB, LED);
 	ONPIN(PORTB, SW);
