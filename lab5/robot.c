@@ -15,6 +15,10 @@
 
 #define SW PB2
 #define LED PB3
+
+#define IR_LO PD2
+#define IR_HI PD3
+
 void lab4_initialize_timer0(void) {
   TCCR0B |= (1 << CS02);   //set timer 0 to increment at 62.5KHz
 }
@@ -52,9 +56,17 @@ int check_starting_bit(){
 	}
 }//end of check_starting_bit
 
+/*
+||
+||
+||		
+*/
+
 int main() {
 	lab4_initialize_timer0();
 	ONPIN(DDRD, LED);
+	ONPIN(DDRD, IR_LO);
+	ONPIN(DDRD, IR_HI);
 	ONPIN(PORTB, LED);
 	ONPIN(PORTB, SW);
 	_delay_ms(200);
@@ -67,7 +79,6 @@ int main() {
 		_delay_ms(200);
 		OFFPIN(PORTB, SW);
 	}
-
 	initialize_motor_timer();
-
+	
 }
