@@ -57,9 +57,8 @@ char check_starting_bit(){
 }//end of check_starting_bit
 
 /*
-||
-||
-||		
+|| 181 182 183 184 185
+|| 186 187 188 189 190
 */
 
 int main() {
@@ -110,30 +109,72 @@ int main() {
 				}
 				if(i == 6) {
 					// bit by bit comparison
-					char eighteen[7] = {0,1,0,0,1,0,0};
+					char one[8] = {1,0,1,1,0,1,0,0};
 					for(j = 0; j<7; j++){
-						if(bits[j] == eighteen[j]){
+						if(bits[j] == one[j]){
 							command[0]++;
 						}
 					}
-					char nineteen[7] = {1,1,0,0,1,0,0};
+					char two[8] = {1,0,1,1,0,1,0,1};
 					for(j = 0; j<7; j++){
-						if(bits[j] == nineteen[j]){
+						if(bits[j] == two[j]){
 							command[1]++;
 						}
 					}
-					char sixteen[7] = {0,0,0,0,1,0,0};
+					char three[8] = {1,0,1,1,0,1,1,0};
 					for(j = 0; j<7; j++){
-						if(bits[j] == sixteen[j]){
+						if(bits[j] == three[j]){
 							command[2]++;
 						}
 					}
-					char seventeen[7] = {1,0,0,0,1,0,0};
+					char four[8] = {1,0,1,1,0,1,1,1};
 					for(j = 0; j<7; j++){
-						if(bits[j] == seventeen[j]){
+						if(bits[j] == four[j]){
 							command[3]++;		
 						}
-					}			
+					}	
+					char five[8] = {1,0,1,1,1,0,0,0};
+					for(j = 0; j<7; j++){
+						if(bits[j] == five[j]){
+							command[4]++;		
+						}
+					}
+					char six[8] = {1,0,1,1,1,0,0,1};
+					for(j = 0; j<7; j++){
+						if(bits[j] == six[j]){
+							command[5]]++;
+						}
+					}
+					char seven[8] = {1,0,1,1,1,0,1,1};
+					for(j = 0; j<7; j++){
+						if(bits[j] == seven[j]){
+							command[6]++;
+						}
+					}
+					char eight[8] = {1,0,1,1,1,1,0,0};
+					for(j = 0; j<7; j++){
+						if(bits[j] == eight[j]){
+							command[7]++;
+						}
+					}
+					char nine[8] = {1,0,1,1,1,1,0,1};
+					for(j = 0; j<7; j++){
+						if(bits[j] == nine[j]){
+							command[8]++;		
+						}
+					}	
+					char ten[8] = {1,0,1,1,1,1,1,0};
+					for(j = 0; j<7; j++){
+						if(bits[j] == ten[j]){
+							command[9]++;		
+						}
+					}
+					
+					// ADD MORE SHIT DOWN HERE |
+					//                         |
+					//	FUCK TABULATION	   |
+					//			   v
+					
 					if(command[0] == 7){
 						// checks counter and sets the wheel speed accordingly
 						set_motor_speed(0,100);
