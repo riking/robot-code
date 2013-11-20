@@ -41,7 +41,7 @@ char falling_edge(int timeout) {
 	return 0; // no falling edge
 }
 
-int check_starting_bit(){
+char check_starting_bit(){
 	char falling_edgeA = falling_edge(150);
 		if(falling_edgeA == 0){
 			return 0;
@@ -80,5 +80,81 @@ int main() {
 		OFFPIN(PORTB, SW);
 	}
 	initialize_motor_timer();
-	
+	int commands[5] = [0,0,0,0,0];
+	char bits[7];
+	char i, j;
+	while(1) {
+		char start = check_starting_bit();
+		if(start == 1) {
+			for(i = 0; i<7; i++) {
+				// assumes there is a falling edge detected.
+				// waits .9ms, if no falling edge and dependent on bit read after .9ms.
+				// 62500
+				// copied from part1.c
+				chk = falling_edge(75);
+				if(chk == 1) {
+					chk = falling_edge(57);
+					if(chk == 1) {
+						i = 7; // falling edge, no bit to read.
+					} else {
+						char a = PIND & (1 << PD5);
+						if(a == 32) {
+							// no falling edge, current signal is on high which -> 0;
+							bits[i] = 0;
+							
+						} else {
+							// current signal on low which -> 10
+							bits[i] = 1;
+						}
+					}
+				}
+				if(i == 6) {
+					// bit by bit comparison
+					char eighteen[7] = {0,1,0,0,1,0,0};
+					for(j = 0; j<7; j++){
+						if(bits[j] == eighteen[j]){
+							command[0]++;
+						}
+					}
+					char nineteen[7] = {1,1,0,0,1,0,0};
+					for(j = 0; j<7; j++){
+						if(bits[j] == nineteen[j]){
+							command[1]++;
+						}
+					}
+					char sixteen[7] = {0,0,0,0,1,0,0};
+					for(j = 0; j<7; j++){
+						if(bits[j] == sixteen[j]){
+							command[2]++;
+						}
+					}
+					char seventeen[7] = {1,0,0,0,1,0,0};
+					for(j = 0; j<7; j++){
+						if(bits[j] == seventeen[j]){
+							command[3]++;		
+						}
+					}			
+					if(command[0] == 7){
+						// checks counter and sets the wheel speed accordingly
+						set_motor_speed(0,100);
+						set_motor_speed(1,100);
+					}
+					if(command[1] == 7){
+						set_motor_speed(0,-100);
+						set_motor_speed(1,-100);						
+					}
+					if(command[2] == 7){
+						set_motor_speed(0,0);
+						set_motor_speed(1,100);
+					}
+					if(command[3] == 7){
+						set_motor_speed(0,100);
+						set_motor_speed(1,0);
+					}
+					//reset comparison counters
+					command[0] = 0, command[1] = 0, command[2] = 0, command[3] = 0;
+				}
+			}
+		}
+	}
 }
