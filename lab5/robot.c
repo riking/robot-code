@@ -36,7 +36,11 @@ char falling_edge(int timeout, char hf) {
 	TCNT0=0;
 	while(TCNT0 < timeout) {
 		current_signal = PIND;
-		current_signal &= (1 << PD5);
+		if(!hf) {
+			current_signal &= (1 << PD5);
+		} else {
+			current_signal &= (1 << PD7);
+		}
 		if(current_signal == 0 && last_signal == 32) {
 			return 1;
 		}
