@@ -25,9 +25,13 @@ void lab4_initialize_timer0(void) {
   TCCR0B |= (1 << CS02);   //set timer 0 to increment at 62.5KHz
 }
 
-char falling_edge(int timeout) {
+char falling_edge(int timeout, char hf) {
 	char current_signal = PIND;
-	current_signal &= (1 << PD5);
+	if(!hf) {
+		current_signal &= (1 << PD5);
+	} else {
+		current_signal &= (1 << PD7);
+	}
 	char last_signal = current_signal;
 	TCNT0=0;
 	while(TCNT0 < timeout) {
@@ -43,12 +47,12 @@ char falling_edge(int timeout) {
 	return 0; // no falling edge
 }
 
-char check_starting_bit(){
-	char falling_edgeA = falling_edge(150);
+char check_starting_bit(char hf){
+	char falling_edgeA = falling_edge(150, hf);
 		if(falling_edgeA == 0){
 			return 0;
 		}else{
-			char falling_edgeB = falling_edge(155);
+			char falling_edgeB = falling_edge(155, hf);
 			if(falling_edgeB == 1){
 				return 0;
 			}else{
@@ -61,10 +65,10 @@ char check_starting_bit(){
 // returns 0 on no start bit
 // returns interpreted IR code otherwise
 unsigned char read_ir() {
-
 	char bits[8];
-	char i, chk;
-	char start = check_starting_bit();
+	char i, chk, hf;
+	char hf = 0;
+	char start = check_starting_bit(hf);
 	if (!start) {
 		return 0;
 	}
@@ -74,13 +78,17 @@ unsigned char read_ir() {
 		// waits .9ms, if no falling edge and dependent on bit read after .9ms.
 		// 62500
 		// copied from part1.c
-		chk = falling_edge(75);
+		chk = falling_edge(75, hf);
 		if(chk == 1) {
-			chk = falling_edge(57);
+			chk = falling_edge(57, hf);
 			if(chk == 1) {
 				i = 7; // falling edge, no bit to read.
 			} else {
-				char a = PIND & (1 << PD5);
+				if(!hf) {
+					char a = PIND & (1 << PD5);
+				} else {
+					char a = PIND & (1 << PD7);
+				}
 				if(a == 32) {
 					// no falling edge, current signal is on high which -> 0;
 					bits[i] = 0;
