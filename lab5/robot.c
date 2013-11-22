@@ -63,7 +63,7 @@ char check_starting_bit(){
 unsigned char read_ir() {
 
 	char bits[8];
-	char i;
+	char i, chk;
 	char start = check_starting_bit();
 	if (!start) {
 		return 0;
