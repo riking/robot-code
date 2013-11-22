@@ -58,124 +58,45 @@ char check_starting_bit(){
 	}
 }
 
+// returns 0 on no start bit
+// returns interpreted IR code otherwise
 unsigned char read_ir() {
 
-	char bits[7];
-	char i, j;
+	char bits[8];
+	char i;
 	char start = check_starting_bit();
-	if (start) {
-		for (i = 0; i<7; i++) {
-			// assumes there is a falling edge detected.
-			// waits .9ms, if no falling edge and dependent on bit read after .9ms.
-			// 62500
-			// copied from part1.c
-			chk = falling_edge(75);
+	if (!start) {
+		return 0;
+	}
+	for (i = 0; i < 8; i++) {
+		// TODO suuport for HF
+		// assumes there is a falling edge detected.
+		// waits .9ms, if no falling edge and dependent on bit read after .9ms.
+		// 62500
+		// copied from part1.c
+		chk = falling_edge(75);
+		if(chk == 1) {
+			chk = falling_edge(57);
 			if(chk == 1) {
-				chk = falling_edge(57);
-				if(chk == 1) {
-					i = 7; // falling edge, no bit to read.
+				i = 7; // falling edge, no bit to read.
+			} else {
+				char a = PIND & (1 << PD5);
+				if(a == 32) {
+					// no falling edge, current signal is on high which -> 0;
+					bits[i] = 0;
+					
 				} else {
-					char a = PIND & (1 << PD5);
-					if(a == 32) {
-						// no falling edge, current signal is on high which -> 0;
-						bits[i] = 0;
-						
-					} else {
-						// current signal on low which -> 10
-						bits[i] = 1;
-					}
+					// current signal on low which -> 10
+					bits[i] = 1;
 				}
-			}
-			if(i == 6) {
-				// bit by bit comparison
-				char one[8] = {1,0,1,1,0,1,0,0};
-				for(j = 0; j<7; j++){
-					if(bits[j] == one[j]){
-						command[0]++;
-					}
-				}
-				char two[8] = {1,0,1,1,0,1,0,1};
-				for(j = 0; j<7; j++){
-					if(bits[j] == two[j]){
-						command[1]++;
-					}
-				}
-				char three[8] = {1,0,1,1,0,1,1,0};
-				for(j = 0; j<7; j++){
-					if(bits[j] == three[j]){
-						command[2]++;
-					}
-				}
-				char four[8] = {1,0,1,1,0,1,1,1};
-				for(j = 0; j<7; j++){
-					if(bits[j] == four[j]){
-						command[3]++;		
-					}
-				}	
-				char five[8] = {1,0,1,1,1,0,0,0};
-				for(j = 0; j<7; j++){
-					if(bits[j] == five[j]){
-						command[4]++;		
-					}
-				}
-				char six[8] = {1,0,1,1,1,0,0,1};
-				for(j = 0; j<7; j++){
-					if(bits[j] == six[j]){
-						command[5]]++;
-					}
-				}
-				char seven[8] = {1,0,1,1,1,0,1,1};
-				for(j = 0; j<7; j++){
-					if(bits[j] == seven[j]){
-						command[6]++;
-					}
-				}
-				char eight[8] = {1,0,1,1,1,1,0,0};
-				for(j = 0; j<7; j++){
-					if(bits[j] == eight[j]){
-						command[7]++;
-					}
-				}
-				char nine[8] = {1,0,1,1,1,1,0,1};
-				for(j = 0; j<7; j++){
-					if(bits[j] == nine[j]){
-						command[8]++;		
-					}
-				}	
-				char ten[8] = {1,0,1,1,1,1,1,0};
-				for(j = 0; j<7; j++){
-					if(bits[j] == ten[j]){
-						command[9]++;		
-					}
-				}
-				
-				// ADD MORE SHIT DOWN HERE |
-				//                         |
-				//	FUCK TABULATION	   |
-				//			   v
-				
-				if(command[0] == 7){
-					// checks counter and sets the wheel speed accordingly
-					set_motor_speed(0,100);
-					set_motor_speed(1,100);
-				}
-				if(command[1] == 7){
-					set_motor_speed(0,-100);
-					set_motor_speed(1,-100);						
-				}
-				if(command[2] == 7){
-					set_motor_speed(0,0);
-					set_motor_speed(1,100);
-				}
-				if(command[3] == 7){
-					set_motor_speed(0,100);
-					set_motor_speed(1,0);
-				}
-				//reset comparison counters
-				command[0] = 0, command[1] = 0, command[2] = 0, command[3] = 0;
 			}
 		}
 	}
+	unsigned char ret = 0;
+	for (i = 0; i < 8; i++) {
+		ret |= (1 << bits[i]);
+	}
+	return ret;
 }
 
 /*
@@ -201,7 +122,43 @@ int main() {
 		OFFPIN(PORTB, SW);
 	}
 	initialize_motor_timer();
-	int commands[5] = [0,0,0,0,0];
 	while(1) {
+		unsigned char ir = read_ir();
+		switch (ir) {
+		case 0:
+			break;
+		case 1 + IR_CODE_BASE:
+			set_motor_speed(1, 100);
+			set_motor_speed(2, -100);
+			break;
+		case 2 + IR_CODE_BASE:
+			set_motor_speed(1, -100);
+			set_motor_speed(2, 100);
+			break;
+		case 3 + IR_CODE_BASE:
+			set_motor_speed(1, 100);
+			set_motor_speed(2, 100);
+			break;
+		case 4 + IR_CODE_BASE:
+			set_motor_speed(1, -100);
+			set_motor_speed(2, -100);
+			break;
+		case 5 + IR_CODE_BASE:
+			set_motor_speed(3, 30);
+			break;
+		case 6 + IR_CODE_BASE:
+			set_motor_speed(3, -30);
+			break;
+		case 7 + IR_CODE_BASE:
+			set_motor_speed(1, 0);
+			set_motor_speed(2, 0);
+			break;
+		case 8 + IR_CODE_BASE:
+			break;
+		case 9 + IR_CODE_BASE:
+			break;
+		case 10 + IR_CODE_BASE:
+			break;
+		}
 	}
 }
