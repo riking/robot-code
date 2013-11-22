@@ -28,18 +28,18 @@ void lab4_initialize_timer0(void) {
 char falling_edge(int timeout, char hf) {
 	char current_signal = PIND;
 	if(!hf) {
-		current_signal &= (1 << PD5);
+		current_signal &= (1 << IR_LO);
 	} else {
-		current_signal &= (1 << PD7);
+		current_signal &= (1 << IR_HI);
 	}
 	char last_signal = current_signal;
 	TCNT0=0;
 	while(TCNT0 < timeout) {
 		current_signal = PIND;
 		if(!hf) {
-			current_signal &= (1 << PD5);
+			current_signal &= (1 << IR_LO);
 		} else {
-			current_signal &= (1 << PD7);
+			current_signal &= (1 << IR_HI);
 		}
 		if(current_signal == 0 && last_signal == 32) {
 			return 1;
@@ -77,7 +77,6 @@ unsigned char read_ir() {
 		return 0;
 	}
 	for (i = 0; i < 8; i++) {
-		// TODO suuport for HF
 		// assumes there is a falling edge detected.
 		// waits .9ms, if no falling edge and dependent on bit read after .9ms.
 		// 62500
@@ -89,9 +88,9 @@ unsigned char read_ir() {
 				i = 7; // falling edge, no bit to read.
 			} else {
 				if(!hf) {
-					char a = PIND & (1 << PD5);
+					char a = PIND & (1 << IR_LO);
 				} else {
-					char a = PIND & (1 << PD7);
+					char a = PIND & (1 << IR_HI);
 				}
 				if(a == 32) {
 					// no falling edge, current signal is on high which -> 0;
