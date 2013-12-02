@@ -123,12 +123,12 @@ unsigned char read_press() {
 
 int main(void) {
 	ONPIN(DDRB, IR_LED);
-	ONPIN(PORTB, IR_LED);
 	ONPIN(DDRB, ST_LED);
 
 	ONPIN(PORTB, ST_SW);
 
 	ONMASK(PORTD, MASK(SW1) | MASK(SW2) | MASK(SW3) | MASK(SW4) | MASK(SW5));
+	OFFMASK(DDRD, MASK(SW1) | MASK(SW2) | MASK(SW3) | MASK(SW4) | MASK(SW5));
 	_delay_ms(800);
 
 	// Pick a frequency
@@ -151,7 +151,7 @@ int main(void) {
 	}
 
 	while(1) {
-		ONPIN(DDRB, ST_LED);
+		ONPIN(PORTB, ST_LED);
 		char i;
 		for (i = 0; i < 5; i++) {
 			char port;
@@ -167,14 +167,14 @@ int main(void) {
 			case 4:
 				port = SW5;
 			}
-			if (GETPIN(PORTD, port)) {
-				ONPIN(DDRB, ST_LED);
+			if (GETPIN(PIND, port)) {
+				ONPIN(PORTB, ST_LED);
 			} else {
-				OFFPIN(DDRB, ST_LED);
+				OFFPIN(PORTB, ST_LED);
 			}
 			_delay_ms(200);
 		}
-		OFFPIN(DDRB, ST_LED);
+		OFFPIN(PORTB, ST_LED);
 		_delay_ms(400);
 	}
 	while(1) {
