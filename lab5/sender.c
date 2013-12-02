@@ -12,11 +12,11 @@
 #define ST_LED PB1
 #define IR_LED PB3
 #define ST_SW PB0
-#define SW1 PD0
-#define SW2 PD1
-#define SW3 PD2
-#define SW4 PD3
-#define SW5 PD4
+#define SW1 PD3
+#define SW2 PD4
+#define SW3 PD5
+#define SW4 PD6
+#define SW5 PD7
 
 #define IR_CODE_BASE 180
 
@@ -150,6 +150,33 @@ int main(void) {
 		set_frequency_38(); //set the transmit frequency to 38KHz
 	}
 
+	while(1) {
+		ONPIN(DDRB, ST_LED);
+		char i;
+		for (i = 0; i < 5; i++) {
+			char port;
+			switch (i) {
+			case 0:
+				port = SW1;
+			case 1:
+				port = SW2;
+			case 2:
+				port = SW3;
+			case 3:
+				port = SW4;
+			case 4:
+				port = SW5;
+			}
+			if (GETPIN(PORTD, port)) {
+				ONPIN(DDRB, ST_LED);
+			} else {
+				OFFPIN(DDRB, ST_LED);
+			}
+			_delay_ms(200);
+		}
+		OFFPIN(DDRB, ST_LED);
+		_delay_ms(400);
+	}
 	while(1) {
 		wait_for_press();
 		send_start_bit();

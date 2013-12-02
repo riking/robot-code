@@ -8,6 +8,14 @@ part2:
 	avr-gcc -mmcu=atmega328p -DF_CPU=$(F_CPU) -O2 -o test.elf lab3_part2.c
 	avr-objcopy -O ihex test.elf test.hex
 	avr-size test.elf
+part2-f:
+	avr-gcc -mmcu=atmega328p -DF_CPU=$(F_CPU) -O2 -o test.elf lab3_part2_froylan.c
+	avr-objcopy -O ihex test.elf test.hex
+	avr-size test.elf
+part2-fmod:
+	avr-gcc -mmcu=atmega328p -DF_CPU=$(F_CPU) -O2 -o test.elf lab3_part2_f_mod.c
+	avr-objcopy -O ihex test.elf test.hex
+	avr-size test.elf
 default:
 	avr-gcc -mmcu=atmega328p -DF_CPU=$(F_CPU) -O2 -o test.elf test.c
 	avr-objcopy -O ihex test.elf test.hex
