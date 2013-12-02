@@ -9,13 +9,14 @@
 #include <util/delay.h>
 #include "masks.h"
 
-#define ST_LED PD5
-#define IR_LED PD3
-#define SW1 PB0
-#define SW2 PB1
-#define SW3 PB2
-#define SW4 PB3
-#define SW5 PB4
+#define ST_LED PB1
+#define IR_LED PB3
+#define ST_SW PB0
+#define SW1 PD0
+#define SW2 PD1
+#define SW3 PD2
+#define SW4 PD3
+#define SW5 PD4
 
 #define IR_CODE_BASE 180
 
@@ -48,14 +49,14 @@ void send_start_bit() {
   unsigned char i;
 
   for (i=0;i<loop_count;i++) {
-    PORTD |= (1 << IR_LED);  //turn on the IR LED
+    PORTB |= (1 << IR_LED);  //turn on the IR LED
     if (frequency == 38) {
       _delay_us(HIGH_US_38KHZ);
     } else {
       _delay_us(HIGH_US_56KHZ);
     }
 
-    PORTD &= ~(1 << IR_LED);  //turn off the IR LED
+    PORTB &= ~(1 << IR_LED);  //turn off the IR LED
     if (frequency == 38) {
       _delay_us(LOW_US_38KHZ);
     } else {
@@ -77,14 +78,14 @@ void send_command(unsigned char command) {
     }
 
     for (j=0;j<delay;j++) {
-      PORTD |= (1 << IR_LED); //turn on the IR LED
+      PORTB |= (1 << IR_LED); //turn on the IR LED
       if (frequency == 38) {
         _delay_us(HIGH_US_38KHZ);
       } else {
         _delay_us(HIGH_US_56KHZ);
       }
 
-      PORTD &= ~(1 << IR_LED);  //turn off the IR LED
+      PORTB &= ~(1 << IR_LED);  //turn off the IR LED
       if (frequency == 38) {
         _delay_us(LOW_US_38KHZ);
       } else {
@@ -98,40 +99,51 @@ void send_command(unsigned char command) {
 
 void wait_for_press(void) {
 	while (1) {
-		if (GETPIN(PINB, SW1) == 0) break;
-		if (GETPIN(PINB, SW2) == 0) break;
-		if (GETPIN(PINB, SW3) == 0) break;
-		if (GETPIN(PINB, SW4) == 0) break;
-		if (GETPIN(PINB, SW5) == 0) break;
+		if (GETPIN(PIND, SW1) == 0) break;
+		if (GETPIN(PIND, SW2) == 0) break;
+		if (GETPIN(PIND, SW3) == 0) break;
+		if (GETPIN(PIND, SW4) == 0) break;
+		if (GETPIN(PIND, SW5) == 0) break;
 	}
-	ONPIN(DDRD, ST_LED);
+	ONPIN(DDRB, ST_LED);
 	_delay_ms(1000);
-	OFFPIN(DDRD, ST_LED);
+	OFFPIN(DDRB, ST_LED);
+}
+
+/*
+sw1 = forward
+sw2 = backward
+sw3 = turn left
+sw4 = turn right
+sw5 = arm state
+*/
+unsigned char read_press() {
+	
 }
 
 int main(void) {
-	ONPIN(DDRD, IR_LED);
-	ONPIN(PORTD, IR_LED);
-	ONPIN(DDRD, ST_LED);
-	ONPIN(PORTD, ST_LED);
+	ONPIN(DDRB, IR_LED);
+	ONPIN(PORTB, IR_LED);
+	ONPIN(DDRB, ST_LED);
 
-	ONMASK(PORTB, MASK(SW1) | MASK(SW2) | MASK(SW3) | MASK(SW4) | MASK(SW5));
-	_delay_ms(200);
+	ONPIN(PORTB, ST_SW);
+
+	ONMASK(PORTD, MASK(SW1) | MASK(SW2) | MASK(SW3) | MASK(SW4) | MASK(SW5));
+	_delay_ms(800);
 
 	// Pick a frequency
 	char hf = 0;
-	hf = GETPIN(PINB, SW1) != 0;
+	hf = GETPIN(PINB, ST_SW) == 0;
+	OFFPIN(PORTB, ST_SW);
 
-	OFFPIN(PORTD, ST_LED);
-	_delay_ms(400);
-	ONPIN(PORTD, ST_LED);
+	ONPIN(PORTB, ST_LED);
 	_delay_ms(200);
-	OFFPIN(PORTD, ST_LED);
+	OFFPIN(PORTB, ST_LED);
 	_delay_ms(200);
 	if (hf) {
-		ONPIN(PORTD, ST_LED);
+		ONPIN(PORTB, ST_LED);
 		_delay_ms(200);
-		OFFPIN(PORTD, ST_LED);
+		OFFPIN(PORTB, ST_LED);
 		_delay_ms(200);
 		set_frequency_56(); // 56 khz
 	} else {
@@ -143,6 +155,6 @@ int main(void) {
 		send_start_bit();
 		unsigned char code = read_press();
 		code += IR_CODE_BASE;
-		send_command(code);
+		send_command(181);
 	}
 }
