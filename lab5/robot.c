@@ -73,6 +73,7 @@ unsigned char read_ir(char hf) {
 	char i, chk, a;
 	char start = check_starting_bit(hf);
 	if (!start) {
+		ONPIN(PORTB, LED);
 		return 0;
 	}
 	for (i = 0; i < 8; i++) {
