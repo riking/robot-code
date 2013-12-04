@@ -133,7 +133,10 @@ int main() {
 	initialize_motor_timer();
 	while(1) {
 		unsigned char ir = read_ir(hf);
-		switch (ir) {
+		if(ir) {
+			ONPIN(PORTB, LED);
+		}
+		/*switch (ir) {
 		case 0:
 			break;
 		case 1 + IR_CODE_BASE:
@@ -168,6 +171,6 @@ int main() {
 			break;
 		case 10 + IR_CODE_BASE:
 			break;
-		}
+		}*/
 	}
 }
