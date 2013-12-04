@@ -41,7 +41,7 @@ char falling_edge(int timeout, char hf) {
 		} else {
 			current_signal &= (1 << IR_HI);
 		}
-		if(current_signal == 0 && last_signal == 32) {
+		if(current_signal && !last_signal) {
 			return 1;
 		}
 		else {
@@ -76,6 +76,7 @@ unsigned char read_ir(char hf) {
 		ONPIN(PORTB, LED);
 		return 0;
 	}
+	OFFPIN(PORTB, LED);
 	for (i = 0; i < 8; i++) {
 		// assumes there is a falling edge detected.
 		// waits .9ms, if no falling edge and dependent on bit read after .9ms.
@@ -134,8 +135,9 @@ int main() {
 	initialize_motor_timer();
 	while(1) {
 		unsigned char ir = read_ir(hf);
-		if(1) {
-			ONPIN(PORTB, LED);
+		if(ir != 0) {
+			OFFPIN(PORTB, LED);
+			while(1) ;
 		}
 		/*switch (ir) {
 		case 0:
