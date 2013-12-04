@@ -41,7 +41,7 @@ char falling_edge(int timeout, char hf) {
 		} else {
 			current_signal &= (1 << IR_HI);
 		}
-		if(current_signal && !last_signal) {
+		if (!current_signal && last_signal) {
 			return 1;
 		}
 		else {
