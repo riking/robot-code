@@ -133,7 +133,7 @@ int main() {
 	initialize_motor_timer();
 	while(1) {
 		unsigned char ir = read_ir(hf);
-		if(ir) {
+		if(1) {
 			ONPIN(PORTB, LED);
 		}
 		/*switch (ir) {
