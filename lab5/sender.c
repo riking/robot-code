@@ -151,33 +151,6 @@ int main(void) {
 	}
 
 	while(1) {
-		ONPIN(PORTB, ST_LED);
-		char i;
-		for (i = 0; i < 5; i++) {
-			char port;
-			switch (i) {
-			case 0:
-				port = SW1;
-			case 1:
-				port = SW2;
-			case 2:
-				port = SW3;
-			case 3:
-				port = SW4;
-			case 4:
-				port = SW5;
-			}
-			if (GETPIN(PIND, port)) {
-				ONPIN(PORTB, ST_LED);
-			} else {
-				OFFPIN(PORTB, ST_LED);
-			}
-			_delay_ms(200);
-		}
-		OFFPIN(PORTB, ST_LED);
-		_delay_ms(400);
-	}
-	while(1) {
 		wait_for_press();
 		send_start_bit();
 		unsigned char code = read_press();

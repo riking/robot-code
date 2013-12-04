@@ -8,16 +8,16 @@
 #include <util/delay.h>
 #include "masks.h"
 
-#define MOTOR1 PD5
-#define MOTOR2 PD6
-#define MOTOR3 PD7
+#define MOTOR1 PD1 // left
+#define MOTOR2 PD3 // right
+#define MOTOR3 PD5
 #include "motors.h"
 
 #define SW PB2
 #define LED PB3
 
-#define IR_LO PD2
-#define IR_HI PD3
+#define IR_LO PD6
+#define IR_HI PD7
 
 #define IR_CODE_BASE 180
 
@@ -68,10 +68,9 @@ char check_starting_bit(char hf){
 
 // returns 0 on no start bit
 // returns interpreted IR code otherwise
-unsigned char read_ir() {
+unsigned char read_ir(char hf) {
 	char bits[8];
-	char i, chk, hf;
-	char hf = 0;
+	char i, chk, a;
 	char start = check_starting_bit(hf);
 	if (!start) {
 		return 0;
@@ -88,11 +87,11 @@ unsigned char read_ir() {
 				i = 7; // falling edge, no bit to read.
 			} else {
 				if(!hf) {
-					char a = PIND & (1 << IR_LO);
+					a = PIND & (1 << IR_LO);
 				} else {
-					char a = PIND & (1 << IR_HI);
+					a = PIND & (1 << IR_HI);
 				}
-				if(a == 32) {
+				if(a != 0) {
 					// no falling edge, current signal is on high which -> 0;
 					bits[i] = 0;
 					
@@ -118,23 +117,22 @@ unsigned char read_ir() {
 int main() {
 	lab4_initialize_timer0();
 	ONPIN(DDRD, LED);
-	ONPIN(DDRD, IR_LO);
-	ONPIN(DDRD, IR_HI);
 	ONPIN(PORTB, LED);
 	ONPIN(PORTB, SW);
 	_delay_ms(200);
+	OFFPIN(PORTB, LED);
+	_delay_ms(200);
 	char hf = 0;
-	OFFPIN(PORTB, SW);
 	if (GETPIN(PINB, SW) != 0) {
 		hf = 1;
 		_delay_ms(200);
-		ONPIN(PORTB, SW);
+		ONPIN(PORTB, LED);
 		_delay_ms(200);
-		OFFPIN(PORTB, SW);
+		OFFPIN(PORTB, LED);
 	}
 	initialize_motor_timer();
 	while(1) {
-		unsigned char ir = read_ir();
+		unsigned char ir = read_ir(hf);
 		switch (ir) {
 		case 0:
 			break;
