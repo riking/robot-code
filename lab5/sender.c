@@ -152,9 +152,11 @@ int main(void) {
 
 	while(1) {
 		wait_for_press();
+		ONPIN(PORTB, ST_LED);
 		send_start_bit();
 		unsigned char code = read_press();
 		code += IR_CODE_BASE;
 		send_command(181);
+		OFFPIN(PORTB, ST_LED);
 	}
 }

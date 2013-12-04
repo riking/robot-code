@@ -116,7 +116,7 @@ unsigned char read_ir(char hf) {
 
 int main() {
 	lab4_initialize_timer0();
-	ONPIN(DDRD, LED);
+	ONPIN(DDRB, LED);
 	ONPIN(PORTB, LED);
 	ONPIN(PORTB, SW);
 	_delay_ms(200);
