@@ -104,7 +104,7 @@ unsigned char read_ir(char hf) {
 	}
 	unsigned char ret = 0;
 	for (i = 0; i < 8; i++) {
-		ret |= (1 << bits[i]);
+		ret |= (bits[i] << i);
 	}
 	return ret;
 }
