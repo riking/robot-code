@@ -112,13 +112,46 @@ void wait_for_press(void) {
 
 /*
 sw1 = forward
-sw2 = backward
-sw3 = turn left
-sw4 = turn right
-sw5 = arm state
+sw5 = backward
+sw2 = turn left
+sw3 = turn right
+sw4 = arm state
 */
+char pr_forward = 0;
+char pr_turn = 0;
+char pr_arm = 0;
 unsigned char read_press() {
+	if (GETPIN(PIND, SW4) != pr_arm) {
+		pr_arm = GETPIN(PIND, SW4);
+		if (pr_arm == 0) {
+			// arm down
+			return 6 + IR_CODE_BASE;
+		} else {
+			// arm up
+			return 5 + IR_CODE_BASE;
+		}
+	}
+	if (!GETPIN(PIND, SW1) && (pr_forward != 1)) {
+		pr_forward = 1; // forward
+		return 1 + IR_CODE_BASE;
+	} else if (!GETPIN(PIND, SW5) && (pr_forward != -1)) {
+		pr_forward = -1; // backward
+		return 2 + IR_CODE_BASE;
+	} else if (pr_forward != 0) {
+		pr_forward = 0; // stop
+		return 7 + IR_CODE_BASE;
+	}
 	
+	if (!GETPIN(PIND, SW2) && (pr_turn != 1)) {
+		pr_turn = 1; // forward
+		return 3 + IR_CODE_BASE;
+	} else if (!GETPIN(PIND, SW3) && (pr_turn != -1)) {
+		pr_turn = -1; // backward
+		return 4 + IR_CODE_BASE;
+	} else if (pr_turn != 0) {
+		pr_turn = 0; // stop
+		return 7 + IR_CODE_BASE;
+	}
 }
 
 int main(void) {
