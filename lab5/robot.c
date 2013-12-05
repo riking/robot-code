@@ -40,6 +40,7 @@ char falling_edge(int timeout, char hf) {
 		} else {
 			current_signal = GETPIN(PIND, IR_HI);
 		}
+
 		if (!current_signal && last_signal) {
 			return 1;
 		}
@@ -52,13 +53,14 @@ char falling_edge(int timeout, char hf) {
 
 char check_starting_bit(char hf){
 	char falling_edgeA = falling_edge(150, hf);
-		if(falling_edgeA == 0){
+		if (falling_edgeA == 0){
 			return 0;
-		}else{
+		} else {
 			char falling_edgeB = falling_edge(155, hf);
-			if(falling_edgeB == 1){
+			if (falling_edgeB == 1) {
 				return 0;
-			}else{
+			} else {
+				OFFPIN(PORTB, LED);
 				//PORTD &= ~(1 << PD7);
 				return 1;
 			}
@@ -72,7 +74,6 @@ unsigned char read_ir(char hf) {
 	char i, chk, a;
 	char start = check_starting_bit(hf);
 	if (!start) {
-		ONPIN(PORTB, LED);
 		return 0;
 	}
 	OFFPIN(PORTB, LED);
@@ -130,12 +131,25 @@ int main() {
 		ONPIN(PORTB, LED);
 		_delay_ms(200);
 		OFFPIN(PORTB, LED);
+		_delay_ms(200);
 	}
 	initialize_motor_timer();
 			set_motor_speed(3, 1);
 		if (GETPIN(PINB, SW)) {
 			set_motor_speed(3, 30);
 		}
+		ONPIN(PORTB, LED);
+
+	while(1) {
+		if (GETPIN(PIND, IR_LO)) {
+			ONPIN(PORTB, LED);
+			_delay_ms(50);
+		} else {
+			OFFPIN(PORTB, LED);
+			_delay_ms(50);
+		}
+	}
+
 	while(1) {
 		unsigned char ir = read_ir(hf);
 		if(ir != 0) {
