@@ -26,20 +26,19 @@ void lab4_initialize_timer0(void) {
 }
 
 char falling_edge(int timeout, char hf) {
-	char current_signal = PIND;
+	char current_signal;
 	if(!hf) {
-		current_signal &= (1 << IR_LO);
+		current_signal = GETPIN(PIND, IR_LO);
 	} else {
-		current_signal &= (1 << IR_HI);
+		current_signal = GETPIN(PIND, IR_HI);
 	}
 	char last_signal = current_signal;
-	TCNT0=0;
+	TCNT0 = 0;
 	while(TCNT0 < timeout) {
-		current_signal = PIND;
 		if(!hf) {
-			current_signal &= (1 << IR_LO);
+			current_signal = GETPIN(PIND, IR_LO);
 		} else {
-			current_signal &= (1 << IR_HI);
+			current_signal = GETPIN(PIND, IR_HI);
 		}
 		if (!current_signal && last_signal) {
 			return 1;
@@ -133,12 +132,17 @@ int main() {
 		OFFPIN(PORTB, LED);
 	}
 	initialize_motor_timer();
+			set_motor_speed(3, 1);
+		if (GETPIN(PINB, SW)) {
+			set_motor_speed(3, 30);
+		}
 	while(1) {
 		unsigned char ir = read_ir(hf);
 		if(ir != 0) {
 			OFFPIN(PORTB, LED);
 			while(1) ;
 		}
+
 		/*switch (ir) {
 		case 0:
 			break;
