@@ -143,10 +143,10 @@ int main() {
 	while(1) {
 		if (GETPIN(PIND, IR_LO)) {
 			ONPIN(PORTB, LED);
-			_delay_ms(10);
+			_delay_ms(12);
 		} else {
 			OFFPIN(PORTB, LED);
-			_delay_ms(10);
+			_delay_ms(12);
 		}
 	}
 

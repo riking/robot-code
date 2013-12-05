@@ -97,19 +97,6 @@ void send_command(unsigned char command) {
   }
 }
 
-void wait_for_press(void) {
-	while (1) {
-		if (GETPIN(PIND, SW1) == 0) break;
-		if (GETPIN(PIND, SW2) == 0) break;
-		if (GETPIN(PIND, SW3) == 0) break;
-		if (GETPIN(PIND, SW4) == 0) break;
-		if (GETPIN(PIND, SW5) == 0) break;
-	}
-	ONPIN(DDRB, ST_LED);
-	_delay_ms(1000);
-	OFFPIN(DDRB, ST_LED);
-}
-
 /*
 sw1 = forward
 sw5 = backward
@@ -124,34 +111,36 @@ unsigned char read_press() {
 	if (GETPIN(PIND, SW4) != pr_arm) {
 		pr_arm = GETPIN(PIND, SW4);
 		if (pr_arm == 0) {
-			// arm down
-			return 6 + IR_CODE_BASE;
+			return 6 + IR_CODE_BASE; // arm down
 		} else {
-			// arm up
-			return 5 + IR_CODE_BASE;
+			return 5 + IR_CODE_BASE; // arm up
 		}
 	}
 	if (!GETPIN(PIND, SW1) && (pr_forward != 1)) {
-		pr_forward = 1; // forward
-		return 1 + IR_CODE_BASE;
+		pr_forward = 1;
+		return 1 + IR_CODE_BASE; // forward
 	} else if (!GETPIN(PIND, SW5) && (pr_forward != -1)) {
-		pr_forward = -1; // backward
-		return 2 + IR_CODE_BASE;
-	} else if (pr_forward != 0) {
-		pr_forward = 0; // stop
-		return 7 + IR_CODE_BASE;
+		pr_forward = -1;
+		return 2 + IR_CODE_BASE; // backward
+	} else if (GETPIN(PIND, SW1) && GETPIN(PIND, SW5) && pr_forward != 0) {
+		pr_forward = 0;
+		pr_turn = 0;
+		return 7 + IR_CODE_BASE; // stop
 	}
 	
 	if (!GETPIN(PIND, SW2) && (pr_turn != 1)) {
-		pr_turn = 1; // forward
-		return 3 + IR_CODE_BASE;
+		pr_turn = 1;
+		return 3 + IR_CODE_BASE; // left
 	} else if (!GETPIN(PIND, SW3) && (pr_turn != -1)) {
-		pr_turn = -1; // backward
-		return 4 + IR_CODE_BASE;
-	} else if (pr_turn != 0) {
-		pr_turn = 0; // stop
-		return 7 + IR_CODE_BASE;
+		pr_turn = -1;
+		return 4 + IR_CODE_BASE; // right
+	} else if (GETPIN(PIND, SW2) && GETPIN(PIND, SW3) && pr_turn != 0) {
+		pr_forward = 0;
+		pr_turn = 0;
+		return 7 + IR_CODE_BASE; // stop
 	}
+
+	return 0;
 }
 
 int main(void) {
@@ -184,12 +173,13 @@ int main(void) {
 	}
 
 	while(1) {
-		wait_for_press();
-		ONPIN(PORTB, ST_LED);
-		send_start_bit();
 		unsigned char code = read_press();
-		code += IR_CODE_BASE;
-		send_command(181);
+		if (code != 0) {
+			ONPIN(PORTB, ST_LED);
+			send_start_bit();
+			send_command(code);
+			_delay_us(100);
+		}
 		OFFPIN(PORTB, ST_LED);
 	}
 }
