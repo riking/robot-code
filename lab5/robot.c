@@ -143,10 +143,10 @@ int main() {
 	while(1) {
 		if (GETPIN(PIND, IR_LO)) {
 			ONPIN(PORTB, LED);
-			_delay_ms(50);
+			_delay_ms(10);
 		} else {
 			OFFPIN(PORTB, LED);
-			_delay_ms(50);
+			_delay_ms(10);
 		}
 	}
 
@@ -154,10 +154,9 @@ int main() {
 		unsigned char ir = read_ir(hf);
 		if(ir != 0) {
 			OFFPIN(PORTB, LED);
-			while(1) ;
 		}
 
-		/*switch (ir) {
+		switch (ir) {
 		case 0:
 			break;
 		case 1 + IR_CODE_BASE:
@@ -192,6 +191,6 @@ int main() {
 			break;
 		case 10 + IR_CODE_BASE:
 			break;
-		}*/
+		}
 	}
 }
