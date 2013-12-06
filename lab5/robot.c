@@ -137,12 +137,13 @@ int main() {
 	hf = 0;
 
 	unsigned char command;
-
+/*
 	while (1) {
 		ONPIN(PORTB, LED);
 		if ( ( command = read_ir(1) )  != 0) {
 			//command -= 175;
-			if (command == 9) return 0;
+			if (command == 185) return 0;
+			if (command == 186) return 0;
 		ONPIN(PORTB, LED);
 		_delay_ms(100);
 		OFFPIN(PORTB, LED);
@@ -169,11 +170,11 @@ int main() {
 		OFFPIN(PORTB, LED);
 		_delay_ms(100);
 		}
-	}
+	}*/
 	//1000001 got 65
 	//   1001 sent 9
 	while (1) {
-		unsigned char ir = read_ir(hf);
+		unsigned char ir = read_ir(1);
 		if(ir != 0) {
 			OFFPIN(PORTB, LED);
 		}
