@@ -81,8 +81,9 @@ unsigned char read_ir(char hf) {
 		// copied from part1.c
 		chk = falling_edge(75, hf);
 		if (chk) {
-			chk = falling_edge(57, hf);
+			chk = falling_edge(/*57*/ 55, hf);
 			if (chk) {
+				_delay_ms(6345);
 				break; // falling edge, no bit to read.
 			} else {
 				a = GETPIN(PIND, pin);
@@ -141,16 +142,32 @@ int main() {
 		ONPIN(PORTB, LED);
 		if ( ( command = read_ir(1) )  != 0) {
 			//command -= 175;
-			if (command > 60) {
-				OFFPIN(PORTB, LED);
-				return 0;
+			if (command == 9) return 0;
+		ONPIN(PORTB, LED);
+		_delay_ms(100);
+		OFFPIN(PORTB, LED);
+		_delay_ms(100);
+		ONPIN(PORTB, LED);
+		_delay_ms(100);
+		OFFPIN(PORTB, LED);
+		_delay_ms(100);
+			while (command) {
+				if (command & 1) {
+					ONPIN(PORTB, LED);
+				} else {
+					OFFPIN(PORTB, LED);
+				}
+				command = command >> 1;
+				_delay_ms(1000);
 			}
-			for (; command >= 0; command--) {
-				OFFPIN(PORTB, LED);
-				_delay_ms(800);
-				ONPIN(PORTB, LED);
-				_delay_ms(800);
-			}
+		ONPIN(PORTB, LED);
+		_delay_ms(100);
+		OFFPIN(PORTB, LED);
+		_delay_ms(100);
+		ONPIN(PORTB, LED);
+		_delay_ms(100);
+		OFFPIN(PORTB, LED);
+		_delay_ms(100);
 		}
 	}
 	//1000001 got 65

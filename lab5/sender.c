@@ -177,7 +177,7 @@ int main(void) {
 		if (code != 0) {
 			ONPIN(PORTB, ST_LED);
 			send_start_bit();
-			send_command(9);
+			send_command(code);
 			_delay_us(200);
 			OFFPIN(PORTB, ST_LED);
 			_delay_us(3300);
