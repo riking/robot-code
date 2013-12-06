@@ -28,6 +28,10 @@ void initialize_motor_timer(void) {
 	TIMSK1 |= (1 << OCIE1A); //enable output compare match
 	sei();                   //enable global interrupts
 	OCR1A = 1000;
+
+	ONPIN(DDRD, MOTOR1);
+	ONPIN(DDRD, MOTOR2);
+	ONPIN(DDRD, MOTOR3);
 }
 
 // _motor_number & 3 is index into _motor_speeds of current
