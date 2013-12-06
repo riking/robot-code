@@ -37,7 +37,7 @@ char falling_edge(int timeout, char hf) {
 
 		current_signal = GETPIN(PIND, pin);
 
-		if (current_signal != last_signal) {
+		if (!current_signal && last_signal) {
 			return 1;
 		}
 	}
