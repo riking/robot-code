@@ -26,26 +26,19 @@ void lab4_initialize_timer0(void) {
 }
 
 char falling_edge(int timeout, char hf) {
-	char current_signal;
-	if(!hf) {
-		current_signal = GETPIN(PIND, IR_LO);
-	} else {
-		current_signal = GETPIN(PIND, IR_HI);
-	}
-	char last_signal = current_signal;
+	char current_signal, last_signal;
+	char pin = (hf) ? (IR_HI) : (IR_LO);
+
+	current_signal = GETPIN(PIND, pin);
+
 	TCNT0 = 0;
 	while(TCNT0 < timeout) {
-		if(!hf) {
-			current_signal = GETPIN(PIND, IR_LO);
-		} else {
-			current_signal = GETPIN(PIND, IR_HI);
-		}
+		last_signal = current_signal;
 
-		if (!current_signal && last_signal) {
+		current_signal = GETPIN(PIND, pin);
+
+		if (current_signal != last_signal) {
 			return 1;
-		}
-		else {
-			last_signal = current_signal;
 		}
 	}
 	return 0; // no falling edge
@@ -53,17 +46,16 @@ char falling_edge(int timeout, char hf) {
 
 char check_starting_bit(char hf){
 	char falling_edgeA = falling_edge(40, hf);
-		if (falling_edgeA == 0){
-			return 0;
+	if (falling_edgeA == 0){
+		return 0;
+	} else {
+		//OFFPIN(PORTB, LED);
+		char falling_edgeB = falling_edge(150, hf);
+		if (falling_edgeB == 0) {
+			return 1;
 		} else {
-			char falling_edgeB = falling_edge(181, hf);
-			if (falling_edgeB == 1) {
-				return 0;
-			} else {
-				OFFPIN(PORTB, LED);
-				//PORTD &= ~(1 << PD7);
-				return 1;
-			}
+			return 0;
+		}
 	}
 }
 
@@ -77,23 +69,20 @@ unsigned char read_ir(char hf) {
 		return 0;
 	}
 	OFFPIN(PORTB, LED);
+	char pin = (hf) ? (IR_HI) : (IR_LO);
 	for (i = 0; i < 8; i++) {
 		// assumes there is a falling edge detected.
 		// waits .9ms, if no falling edge and dependent on bit read after .9ms.
 		// 62500
 		// copied from part1.c
-		chk = falling_edge(75, hf);
+		chk = falling_edge(80, hf);
 		if(chk == 1) {
-			chk = falling_edge(57, hf);
+			chk = falling_edge(48, hf);
 			if(chk == 1) {
-				i = 7; // falling edge, no bit to read.
+				i = 10; // falling edge, no bit to read.
 			} else {
-				if(!hf) {
-					a = PIND & (1 << IR_LO);
-				} else {
-					a = PIND & (1 << IR_HI);
-				}
-				if(a != 0) {
+				a = GETPIN(PIND, pin);
+				if (a != 0) {
 					// no falling edge, current signal is on high which -> 0;
 					bits[i] = 0;
 					
@@ -134,23 +123,35 @@ int main() {
 		_delay_ms(200);
 	}
 	initialize_motor_timer();
-			set_motor_speed(3, 1);
-		if (GETPIN(PINB, SW)) {
-			set_motor_speed(3, 30);
-		}
-		ONPIN(PORTB, LED);
 
-	while(1) {
-		if (GETPIN(PIND, IR_LO)) {
-			ONPIN(PORTB, LED);
-			_delay_ms(12);
-		} else {
-			OFFPIN(PORTB, LED);
-			_delay_ms(12);
+	set_motor_speed(3, 1);
+	if (GETPIN(PINB, SW)) {
+		set_motor_speed(3, 30);
+	}
+	ONPIN(PORTB, LED);
+	hf = 0;
+
+	char command;
+
+	while (1) {
+		ONPIN(PORTB, LED);
+		if ( ( command = read_ir(1) )  != 0) {
+			//command -= 175;
+			if (command > 60) {
+				OFFPIN(PORTB, LED);
+				return 0;
+			}
+			for (; command >= 0; command--) {
+				OFFPIN(PORTB, LED);
+				_delay_ms(800);
+				ONPIN(PORTB, LED);
+				_delay_ms(800);
+			}
 		}
 	}
-
-	while(1) {
+	//1000001
+	//   1001
+	while (1) {
 		unsigned char ir = read_ir(hf);
 		if(ir != 0) {
 			OFFPIN(PORTB, LED);
