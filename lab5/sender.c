@@ -178,9 +178,9 @@ int main(void) {
 			ONPIN(PORTB, ST_LED);
 			send_start_bit();
 			send_command(9);
-			_delay_us(300);
+			_delay_us(200);
 			OFFPIN(PORTB, ST_LED);
-			_delay_ms(1);
+			_delay_us(3300);
 		}
 		OFFPIN(PORTB, ST_LED);
 	}

@@ -32,7 +32,7 @@ char falling_edge(int timeout, char hf) {
 	current_signal = GETPIN(PIND, pin);
 
 	TCNT0 = 0;
-	while(TCNT0 < timeout) {
+	while (TCNT0 <= timeout) {
 		last_signal = current_signal;
 
 		current_signal = GETPIN(PIND, pin);
@@ -68,6 +68,10 @@ unsigned char read_ir(char hf) {
 	if (!start) {
 		return 0;
 	}
+	for (i = 0; i < 8; i++) {
+		bits[i] = 0;
+	}
+
 	OFFPIN(PORTB, LED);
 	char pin = (hf) ? (IR_HI) : (IR_LO);
 	for (i = 0; i < 8; i++) {
@@ -75,11 +79,11 @@ unsigned char read_ir(char hf) {
 		// waits .9ms, if no falling edge and dependent on bit read after .9ms.
 		// 62500
 		// copied from part1.c
-		chk = falling_edge(80, hf);
-		if(chk == 1) {
-			chk = falling_edge(48, hf);
-			if(chk == 1) {
-				i = 10; // falling edge, no bit to read.
+		chk = falling_edge(75, hf);
+		if (chk) {
+			chk = falling_edge(57, hf);
+			if (chk) {
+				break; // falling edge, no bit to read.
 			} else {
 				a = GETPIN(PIND, pin);
 				if (a != 0) {
@@ -101,9 +105,9 @@ unsigned char read_ir(char hf) {
 }
 
 /*
-|| 181 182 183 184 185
-|| 186 187 188 189 190
-*/
+ * 181 182 183 184 185
+ * 186 187 188 189 190
+ */
 
 int main() {
 	lab4_initialize_timer0();
@@ -131,7 +135,7 @@ int main() {
 	ONPIN(PORTB, LED);
 	hf = 0;
 
-	char command;
+	unsigned char command;
 
 	while (1) {
 		ONPIN(PORTB, LED);
@@ -149,8 +153,8 @@ int main() {
 			}
 		}
 	}
-	//1000001
-	//   1001
+	//1000001 got 65
+	//   1001 sent 9
 	while (1) {
 		unsigned char ir = read_ir(hf);
 		if(ir != 0) {
