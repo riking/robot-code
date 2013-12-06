@@ -52,11 +52,11 @@ char falling_edge(int timeout, char hf) {
 }
 
 char check_starting_bit(char hf){
-	char falling_edgeA = falling_edge(150, hf);
+	char falling_edgeA = falling_edge(62.5, hf);
 		if (falling_edgeA == 0){
 			return 0;
 		} else {
-			char falling_edgeB = falling_edge(155, hf);
+			char falling_edgeB = falling_edge(156.25, hf);
 			if (falling_edgeB == 1) {
 				return 0;
 			} else {
