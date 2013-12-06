@@ -10,7 +10,7 @@
 
 #define MOTOR1 PD1 // left
 #define MOTOR2 PD3 // right
-#define MOTOR3 PD5
+#define MOTOR3 PD2
 #include "motors.h"
 
 #define SW PB2
@@ -112,6 +112,7 @@ unsigned char read_ir(char hf) {
 
 int main() {
 	lab4_initialize_timer0();
+	initialize_motor_timer();
 	ONPIN(DDRB, LED);
 	ONPIN(PORTB, LED);
 	ONPIN(PORTB, SW);
@@ -127,61 +128,17 @@ int main() {
 		OFFPIN(PORTB, LED);
 		_delay_ms(200);
 	}
-	initialize_motor_timer();
 
-	set_motor_speed(3, 1);
-	if (GETPIN(PINB, SW)) {
-		set_motor_speed(3, 30);
-	}
 	ONPIN(PORTB, LED);
 	hf = 0;
 
-	unsigned char command;
-/*
-	while (1) {
-		ONPIN(PORTB, LED);
-		if ( ( command = read_ir(1) )  != 0) {
-			//command -= 175;
-			if (command == 185) return 0;
-			if (command == 186) return 0;
-		ONPIN(PORTB, LED);
-		_delay_ms(100);
-		OFFPIN(PORTB, LED);
-		_delay_ms(100);
-		ONPIN(PORTB, LED);
-		_delay_ms(100);
-		OFFPIN(PORTB, LED);
-		_delay_ms(100);
-			while (command) {
-				if (command & 1) {
-					ONPIN(PORTB, LED);
-				} else {
-					OFFPIN(PORTB, LED);
-				}
-				command = command >> 1;
-				_delay_ms(1000);
-			}
-		ONPIN(PORTB, LED);
-		_delay_ms(100);
-		OFFPIN(PORTB, LED);
-		_delay_ms(100);
-		ONPIN(PORTB, LED);
-		_delay_ms(100);
-		OFFPIN(PORTB, LED);
-		_delay_ms(100);
-		}
-	}*/
 	//1000001 got 65
 	//   1001 sent 9
+	set_motor_speed(1, 30);
 	while (1) {
 		unsigned char ir = read_ir(1);
-		if(ir != 0) {
-			OFFPIN(PORTB, LED);
-		}
 
 		switch (ir) {
-		case 0:
-			break;
 		case 1 + IR_CODE_BASE:
 			set_motor_speed(1, 100);
 			set_motor_speed(2, -100);
@@ -214,6 +171,14 @@ int main() {
 			break;
 		case 10 + IR_CODE_BASE:
 			break;
+		default:
+			ir = 0;
+			break;
+		}
+		if(ir != 0) {
+			ONPIN(PORTB, LED);
+			_delay_ms(10);
+			OFFPIN(PORTB, LED);
 		}
 	}
 }

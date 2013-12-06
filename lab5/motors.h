@@ -97,7 +97,7 @@ void set_motor_speed(char motor_number, signed int speed) {
 	else if (speed > 100) real_speed = 100;
 	else real_speed = speed;
 
-	_motor_speeds[motor_number] = speed;
+	_motor_speeds[motor_number] = real_speed;
 }
 
 #endif
