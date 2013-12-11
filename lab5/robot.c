@@ -22,8 +22,21 @@
 #define IR_CODE_BASE 180
 
 void lab4_initialize_timer0(void) {
-  TCCR0B |= (1 << CS02);   //set timer 0 to increment at 62.5KHz
+  TCCR0B |= (1 << CS02);   // set timer 0 to increment at 62.5KHz
+  TCCR2B |= (1 << CS10);
+  TCCR2B |= (1 << CS12);   // set timer 2 to increment at 15.63KHz
+  TIMSK2 |= (1 << OCIE2A); // enable output compare match
+  OCR2A = 0;
 }
+
+/*
+timer goes to 7327*/
+#define SHUTOFF_TIME 187561
+volatile long timer = 0;
+ISR(TIMER2_COMPA_vect) {
+	timer++;
+}
+
 
 char falling_edge(int timeout, char hf) {
 	char current_signal, last_signal;
@@ -105,22 +118,20 @@ unsigned char read_ir(char hf) {
 	return ret;
 }
 
-/*
- * 181 182 183 184 185
- * 186 187 188 189 190
- */
-
 int main() {
+	// initialize timers
 	lab4_initialize_timer0();
 	initialize_motor_timer();
 	ONPIN(DDRB, LED);
-	ONPIN(PORTB, LED);
 	ONPIN(PORTB, SW);
+
+	// Frequency switch
+	ONPIN(PORTB, LED);
 	_delay_ms(200);
 	OFFPIN(PORTB, LED);
 	_delay_ms(200);
 	char hf = 0;
-	if (GETPIN(PINB, SW) != 0) {
+	if (!GETPIN(PINB, SW) != 0) {
 		hf = 1;
 		_delay_ms(200);
 		ONPIN(PORTB, LED);
@@ -129,13 +140,11 @@ int main() {
 		_delay_ms(200);
 	}
 
+	_delay_ms(200);
 	ONPIN(PORTB, LED);
-	hf = 0;
 
-	//1000001 got 65
-	//   1001 sent 9
-	set_motor_speed(1, 30);
 	while (1) {
+		// Read the infared code, then react to it
 		unsigned char ir = read_ir(1);
 
 		switch (ir) {
@@ -159,9 +168,9 @@ int main() {
 			set_motor_speed(3, 30);
 			break;
 		case 6 + IR_CODE_BASE:
-			set_motor_speed(3, -30);
+			set_motor_speed(3, -20);
 			break;
-		case 7 + IR_CODE_BASE:
+		case 7 + IR_CODE_BASE: // stop
 			set_motor_speed(1, 0);
 			set_motor_speed(2, 0);
 			break;
@@ -175,10 +184,38 @@ int main() {
 			ir = 0;
 			break;
 		}
-		if(ir != 0) {
+		// Make flash if valid signal
+		if (ir > IR_CODE_BASE && ir < 10 + IR_CODE_BASE) {
 			ONPIN(PORTB, LED);
-			_delay_ms(10);
+			_delay_ms(100);
 			OFFPIN(PORTB, LED);
 		}
+		// Check for time limit
+		if (timer > SHUTOFF_TIME) {
+			set_motor_speed(1, 0);
+			set_motor_speed(2, 0);
+			ONPIN(PORTB, LED);
+			_delay_ms(200);
+			OFFPIN(PORTB, LED);
+			_delay_ms(200);
+			ONPIN(PORTB, LED);
+			_delay_ms(200);
+			OFFPIN(PORTB, LED);
+			_delay_ms(200);
+			ONPIN(PORTB, LED);
+			_delay_ms(200);
+			OFFPIN(PORTB, LED);
+			_delay_ms(200);
+			ONPIN(PORTB, LED);
+			_delay_ms(200);
+			OFFPIN(PORTB, LED);
+			_delay_ms(200);
+			ONPIN(PORTB, LED);
+			_delay_ms(200);
+			OFFPIN(PORTB, LED);
+			_delay_ms(200);
+			return 0; // kill program
+		}
 	}
+	return 0;
 }

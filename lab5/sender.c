@@ -107,7 +107,17 @@ sw4 = arm state
 char pr_forward = 0;
 char pr_turn = 0;
 char pr_arm = 0;
+
+/*
+ * Read the current state of the 5 switches and choose an infared action to
+ * send based on that state and the history.
+ *
+ * The current implementation of this method has the unfortunate side effect
+ * that if both the forward and back buttons, or the left and right buttons,
+ * are pressed at the same time, it constantly alternates between the signals.
+ */
 unsigned char read_press() {
+	// Middle button on control board: Arm up/down
 	if (GETPIN(PIND, SW4) != pr_arm) {
 		pr_arm = GETPIN(PIND, SW4);
 		if (pr_arm == 0) {
@@ -116,6 +126,8 @@ unsigned char read_press() {
 			return 5 + IR_CODE_BASE; // arm up
 		}
 	}
+
+	// Left buttons: Foward/Back
 	if (!GETPIN(PIND, SW1) && (pr_forward != 1)) {
 		pr_forward = 1;
 		return 1 + IR_CODE_BASE; // forward
@@ -127,7 +139,8 @@ unsigned char read_press() {
 		pr_turn = 0;
 		return 7 + IR_CODE_BASE; // stop
 	}
-	
+
+	// Right buttons: Left/Right
 	if (!GETPIN(PIND, SW2) && (pr_turn != 1)) {
 		pr_turn = 1;
 		return 3 + IR_CODE_BASE; // left
@@ -173,14 +186,16 @@ int main(void) {
 	}
 
 	while(1) {
+		// Get the next signal to send, then send it.
 		unsigned char code = read_press();
 		if (code != 0) {
+			// Flash the status LED when sending
 			ONPIN(PORTB, ST_LED);
 			send_start_bit();
 			send_command(code);
 			_delay_us(200);
 			OFFPIN(PORTB, ST_LED);
-			_delay_us(3300);
+			_delay_ms(250);
 		}
 		OFFPIN(PORTB, ST_LED);
 	}
